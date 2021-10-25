@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="../styles/dist.css" />
+    <title>Open-LMS-Tasks</title>
+  </head>
+  <body class="min-w-500 max-w-500">
+    <header>
+      <div class="shadow">
+        <div class="p-2 text-lg flex justify-between">
+          <span>Open-LMS-Tasks</span>
+          <span id="date" class="p-1 text-sm text-gray-400"></span>
+        </div>
+      </div>
+    </header>
+    <div class="content">
+      <div class="p-3 flex justify-between">
+        <span>課題一覧</span>
+        <div id="catButtons">
+          <button
+            id="catBtn0"
+            class="px-2 m-0 border border-blue-400 rounded-l-lg bg-blue-300"
+            type="button"
+          >
+            すべて</button
+          ><button
+            id="catBtn1"
+            class="px-2 m-0 border rounded-none hover:bg-blue-100"
+            type="button"
+          >
+            未提出</button
+          ><button
+            id="catBtn2"
+            class="px-2 m-0 border rounded-r-lg hover:bg-blue-100"
+            type="button"
+          >
+            提出済み
+          </button>
+        </div>
+      </div>
+      <div class="task-list p-2 m-2 border rounded-sm">
+        <table id="taskList" class="table-fixed">
+          <thead>
+            <tr>
+              <th class="w-1/4 px-2 text-left">課題名</th>
+              <th class="w-1/4 px-2 text-left">講義名</th>
+              <th class="w-[1/8] px-2 text-left">形式</th>
+              <th class="w-[1/8] px-2 text-left">期限</th>
+              <th class="w-1/4 px-2 text-left">状態</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+    <footer>
+      <div class="bg-heavy-blue">
+        <div class="p-2 text-lg flex justify-between"></div>
+      </div>
+    </footer>
+    <script src="../scripts/popup/popup.js"></script>
+  </body>
+</html>

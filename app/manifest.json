@@ -1,0 +1,23 @@
+{
+  "name": "Open-LMS-Tasks",
+  "short_name": "OLC",
+  "description": "__MSG_appDescription__",
+  "version": "0.0.0",
+  "manifest_version": 3,
+  "content_scripts": [
+    {
+      "matches": [
+        "https://tlms.tsc.u-tokai.ac.jp/mod/assign/*",
+        "https://tlms.tsc.u-tokai.ac.jp/mod/quiz/*"
+      ],
+      "js": ["scripts/main//main.js"]
+    }
+  ],
+  "background": {
+    "service_worker": "scripts/background.js"
+  },
+  "action": {
+    "default_popup": "pages/popup.html"
+  },
+  "permissions": ["tabs", "storage"]
+}
