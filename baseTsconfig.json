@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "commonjs",
+    "allowJs": true,
+    "outDir": "app/scripts/",
+    "strict": true,
+    "baseUrl": "./src",
+    "typeRoots": ["./node_modules/@types", "./types"],
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  }
+}
