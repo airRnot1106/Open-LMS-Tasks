@@ -39,6 +39,10 @@ class LocalStorage {
             });
         });
     }
+    static async reset() {
+        const storageData = await this.fetch();
+        await chrome.storage.local.remove(Object.keys(storageData));
+    }
 }
 class Task {
     static toArray(taskObj) {
@@ -165,6 +169,17 @@ document.getElementById('catBtn1')?.addEventListener('click', async () => {
 document.getElementById('catBtn2')?.addEventListener('click', async () => {
     await TaskList.instance.updateCategoryState(2);
 }, false);
+document.getElementById('resetBtn')?.addEventListener('click', async () => {
+    await LocalStorage.reset();
+    await TaskList.instance.updateCategoryState(0);
+});
+document.getElementById('openLmsLink')?.addEventListener('click', async () => {
+    const link = document.getElementById('openLmsLink');
+    await chrome.tabs.create({
+        active: true,
+        url: link.href,
+    });
+});
 
 
 /***/ })

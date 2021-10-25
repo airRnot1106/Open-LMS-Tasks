@@ -15,6 +15,10 @@ class LocalStorage {
       });
     });
   }
+  static async reset() {
+    const storageData = <{ [id: string]: string }>await this.fetch();
+    await chrome.storage.local.remove(Object.keys(storageData));
+  }
 }
 
 class Task {
@@ -162,3 +166,16 @@ document.getElementById('catBtn2')?.addEventListener(
   },
   false
 );
+
+document.getElementById('resetBtn')?.addEventListener('click', async () => {
+  await LocalStorage.reset();
+  await TaskList.instance.updateCategoryState(0);
+});
+
+document.getElementById('openLmsLink')?.addEventListener('click', async () => {
+  const link = <HTMLLinkElement>document.getElementById('openLmsLink')!;
+  await chrome.tabs.create({
+    active: true,
+    url: link.href,
+  });
+});
