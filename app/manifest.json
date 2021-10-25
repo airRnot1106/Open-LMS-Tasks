@@ -1,8 +1,8 @@
 {
   "name": "Open-LMS-Tasks",
   "short_name": "OLC",
-  "description": "__MSG_appDescription__",
-  "version": "0.0.0",
+  "description": "Open LMSの課題の一覧を表示します",
+  "version": "0.1.0",
   "manifest_version": 3,
   "icons": {
     "16": "images/icon-16.png",
