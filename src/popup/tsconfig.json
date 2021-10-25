@@ -1,0 +1,4 @@
+{
+  "extends": "../../baseTsconfig.json",
+  "include": ["./popup.ts", "../type/type.ts"]
+}

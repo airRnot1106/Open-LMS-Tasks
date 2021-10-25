@@ -1,0 +1,4 @@
+{
+  "extends": "../../baseTsconfig.json",
+  "include": ["./main.ts", "../type/type.ts"]
+}
