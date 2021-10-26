@@ -171,10 +171,10 @@ class TaskList {
     }
     refreshTable() {
         const newTableRows = this._pages[this._currentPage];
-        if (!newTableRows)
-            return;
         const table = document.querySelector('tbody');
         table.innerHTML = '';
+        if (!newTableRows)
+            return;
         for (const rowData of newTableRows) {
             const newRow = table.insertRow();
             for (const cellData of rowData) {

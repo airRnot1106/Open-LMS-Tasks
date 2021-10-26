@@ -165,9 +165,9 @@ class TaskList {
 
   private refreshTable() {
     const newTableRows = this._pages[this._currentPage];
-    if (!newTableRows) return;
     const table = <HTMLTableSectionElement>document.querySelector('tbody')!;
     table.innerHTML = '';
+    if (!newTableRows) return;
     for (const rowData of newTableRows) {
       const newRow = table.insertRow();
       for (const cellData of rowData) {
