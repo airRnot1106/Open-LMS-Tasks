@@ -27,7 +27,7 @@ class LMSManager {
   }
 
   async execute() {
-    console.log('Open LMS Tasks is working now');
+    console.log('Open LMS Tasks is working now.');
     const url = location.href;
     const id = this.extractId(url);
     const type = <TaskType>url.split('/')[4];
@@ -40,12 +40,12 @@ class LMSManager {
         task = new Quiz(id);
     }
     await task.execute();
-    console.log('Open LMS Tasks has completed working');
+    console.log('Open LMS Tasks has completed working.');
   }
 
   private extractId(url: string) {
     const idPart = url.match(/(id|cmid)=\d+/);
-    if (!idPart) throw new Error('invalid url');
+    if (!idPart) throw new Error('invalid url.');
     return idPart[0].split('=').at(-1)!;
   }
 }
@@ -74,7 +74,7 @@ abstract class BaseTask {
   }
 
   protected existsCache() {
-    if (!this._cache) throw new Error('cache is not defined');
+    if (!this._cache) throw new Error('cache is not defined.');
     return this._cache.hasOwnProperty(this._id);
   }
 
@@ -130,7 +130,7 @@ class Assign extends BaseTask {
   }
 
   protected checkStatUpdate() {
-    if (!this._task) throw new Error('task is not defined');
+    if (!this._task) throw new Error('task is not defined.');
     const tbody = document
       .querySelector('.generaltable')!
       .querySelector('tbody');
@@ -191,7 +191,7 @@ class Quiz extends BaseTask {
   }
 
   checkStatUpdate() {
-    if (!this._task) throw new Error('task is not defined');
+    if (!this._task) throw new Error('task is not defined.');
     if (
       /https:\/\/tlms.tsc.u-tokai.ac.jp\/mod\/quiz\/review.php\?attempt=\d+&cmid=\d+\S*/.test(
         location.href
