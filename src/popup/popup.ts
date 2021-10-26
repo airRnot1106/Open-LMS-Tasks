@@ -8,6 +8,7 @@ class LocalStorage {
     });
     return parsedJsonData;
   }
+
   private static async fetch() {
     return new Promise((resolve) => {
       chrome.storage.local.get((data) => {
@@ -15,6 +16,7 @@ class LocalStorage {
       });
     });
   }
+
   static async reset() {
     const storageData = <{ [id: string]: string }>await this.fetch();
     await chrome.storage.local.remove(Object.keys(storageData));
@@ -31,6 +33,7 @@ class Task {
       taskObj.submissionState,
     ];
   }
+
   static toArrays(taskObjs: TaskObj[]) {
     return taskObjs.map((taskObj) => {
       return this.toArray(taskObj);
@@ -46,6 +49,7 @@ class CategoryButton {
     }
     return this._instance;
   }
+
   changeButtonState(btnId: CategoryTypeNumber) {
     const catButtonsList = document.getElementById('catButtons')?.childNodes;
     const catButtonsArray: HTMLElement[] = [];
@@ -56,6 +60,7 @@ class CategoryButton {
     this.clearClass(catButtonsArray);
     this.activeClass(catButtonsArray, btnId);
   }
+
   private clearClass(catButtons: HTMLElement[]) {
     for (const catButton of catButtons) {
       catButton.classList.remove(
@@ -65,6 +70,7 @@ class CategoryButton {
       );
     }
   }
+
   private activeClass(catButtons: HTMLElement[], btnId: CategoryTypeNumber) {
     for (let i = 0; i < catButtons.length; i++) {
       if (i === btnId) {
@@ -88,17 +94,20 @@ class TaskList {
     this._pages = [];
     this._currentPage = 0;
   }
+
   static get instance() {
     if (!this._instance) {
       this._instance = new TaskList();
     }
     return this._instance;
   }
+
   async updateCategoryState(btnId: CategoryTypeNumber) {
     this._categoryState = btnId;
     this._currentPage = 0;
     await this.categorize();
   }
+
   updateCurrentPage(moving: number) {
     this._currentPage += moving;
     if (this._currentPage < 0) {
@@ -109,6 +118,7 @@ class TaskList {
     }
     this.refreshTable();
   }
+
   private async categorize() {
     this._categoryButton.changeButtonState(this._categoryState);
     const storageData = await LocalStorage.get();
@@ -116,6 +126,7 @@ class TaskList {
     this.paginate(Task.toArrays(filteredData));
     this.refreshTable();
   }
+
   private filterStorageData(storageData: TaskObj[]) {
     let categorizedData: TaskObj[] = [];
     switch (this._categoryState) {
@@ -135,6 +146,7 @@ class TaskList {
     }
     return categorizedData;
   }
+
   private paginate(tableRows: ListRow[]) {
     const paginatedData: ListRow[][] = [];
     let page: ListRow[] = [];
@@ -150,6 +162,7 @@ class TaskList {
     });
     this._pages = paginatedData;
   }
+
   private refreshTable() {
     const newTableRows = this._pages[this._currentPage];
     if (!newTableRows) return;
@@ -164,6 +177,7 @@ class TaskList {
       }
     }
   }
+
   showDate() {
     const date = dayjs().format('YYYY/MM/DD HH:mm:ss');
     const element = document.getElementById('date')!;
