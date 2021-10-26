@@ -146,6 +146,7 @@ class TaskList {
         const filteredData = this.filterStorageData(storageData);
         const sortedData = this.sort(Task.toArrays(filteredData));
         this.paginate(sortedData);
+        this.purgePage();
         this.refreshTable();
     }
     filterStorageData(storageData) {
@@ -194,6 +195,18 @@ class TaskList {
             }
         });
         this._pages = paginatedData;
+    }
+    purgePage() {
+        if (!this._pages.length)
+            return;
+        this._pages.forEach((page, index, pages) => {
+            const submitted = page.filter((rowData) => {
+                return rowData[4] === '提出済み';
+            });
+            if (submitted.length === 8) {
+                pages.splice(index, 1);
+            }
+        });
     }
     refreshTable() {
         const newTableRows = this._pages[this._currentPage];
