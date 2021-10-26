@@ -18,9 +18,6 @@
       "js": ["scripts/main//main.js"]
     }
   ],
-  "background": {
-    "service_worker": "scripts/background.js"
-  },
   "action": {
     "default_popup": "pages/popup.html"
   },
