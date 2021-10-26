@@ -99,9 +99,13 @@ class TaskList {
     static _instance;
     _categoryButton;
     _categoryState;
+    _pages;
+    _currentPage;
     constructor() {
         this._categoryButton = CategoryButton.instance;
         this._categoryState = 0;
+        this._pages = [];
+        this._currentPage = 0;
     }
     static get instance() {
         if (!this._instance) {
@@ -111,13 +115,25 @@ class TaskList {
     }
     async updateCategoryState(btnId) {
         this._categoryState = btnId;
-        this.categorize();
+        this._currentPage = 0;
+        await this.categorize();
+    }
+    updateCurrentPage(moving) {
+        this._currentPage += moving;
+        if (this._currentPage < 0) {
+            this._currentPage = 0;
+        }
+        if (this._currentPage > this._pages.length - 1) {
+            this._currentPage = this._pages.length - 1;
+        }
+        this.refreshTable();
     }
     async categorize() {
         this._categoryButton.changeButtonState(this._categoryState);
         const storageData = await LocalStorage.get();
         const filteredData = this.filterStorageData(storageData);
-        this.refreshTable(Task.toArrays(filteredData));
+        this.paginate(Task.toArrays(filteredData));
+        this.refreshTable();
     }
     filterStorageData(storageData) {
         let categorizedData = [];
@@ -138,7 +154,25 @@ class TaskList {
         }
         return categorizedData;
     }
-    refreshTable(newTableRows) {
+    paginate(tableRows) {
+        const paginatedData = [];
+        let page = [];
+        let index = 0;
+        tableRows.forEach((tableRow, arrayIdx, array) => {
+            page.push(tableRow);
+            index++;
+            if (index > 7 || arrayIdx === array.length - 1) {
+                index = 0;
+                paginatedData.push(page);
+                page = [];
+            }
+        });
+        this._pages = paginatedData;
+    }
+    refreshTable() {
+        const newTableRows = this._pages[this._currentPage];
+        if (!newTableRows)
+            return;
         const table = document.querySelector('tbody');
         table.innerHTML = '';
         for (const rowData of newTableRows) {
@@ -169,17 +203,23 @@ document.getElementById('catBtn1')?.addEventListener('click', async () => {
 document.getElementById('catBtn2')?.addEventListener('click', async () => {
     await TaskList.instance.updateCategoryState(2);
 }, false);
+document.getElementById('prev')?.addEventListener('click', async () => {
+    TaskList.instance.updateCurrentPage(-1);
+}, false);
+document.getElementById('next')?.addEventListener('click', async () => {
+    TaskList.instance.updateCurrentPage(1);
+}, false);
 document.getElementById('resetBtn')?.addEventListener('click', async () => {
     await LocalStorage.reset();
     await TaskList.instance.updateCategoryState(0);
-});
+}, false);
 document.getElementById('openLmsLink')?.addEventListener('click', async () => {
     const link = document.getElementById('openLmsLink');
     await chrome.tabs.create({
         active: true,
         url: link.href,
     });
-});
+}, false);
 
 
 /***/ })
