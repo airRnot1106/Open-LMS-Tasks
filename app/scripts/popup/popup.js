@@ -259,7 +259,6 @@ document.getElementById('next')?.addEventListener('click', async () => {
 }, false);
 document.getElementById('toggle')?.addEventListener('click', async () => {
     const toggle = document.getElementById('toggle');
-    console.log('aa');
     TaskList.instance.updateIsAllShow(toggle.checked);
 });
 document.getElementById('resetBtn')?.addEventListener('click', async () => {

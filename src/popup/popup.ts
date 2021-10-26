@@ -271,7 +271,6 @@ document.getElementById('next')?.addEventListener(
 
 document.getElementById('toggle')?.addEventListener('click', async () => {
   const toggle = <HTMLInputElement>document.getElementById('toggle')!;
-  console.log('aa');
   TaskList.instance.updateIsAllShow(toggle.checked);
 });
 
