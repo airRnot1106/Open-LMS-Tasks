@@ -25,10 +25,9 @@ class LMSManager {
         return this._instance;
     }
     async execute() {
-        console.log('start');
+        console.log('Open LMS Tasks is working now');
         const url = location.href;
         const id = this.extractId(url);
-        console.log('id:', id);
         const type = url.split('/')[4];
         let task;
         switch (type) {
@@ -62,10 +61,8 @@ class BaseTask {
     }
     isValidUrl(url) {
         for (const path of this._disallowPaths) {
-            if (new RegExp(path).test(url)) {
-                console.log('invalid url');
+            if (new RegExp(path).test(url))
                 return false;
-            }
         }
         return true;
     }
