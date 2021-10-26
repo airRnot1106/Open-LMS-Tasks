@@ -16,7 +16,7 @@
 4. 右上のデベロッパーモードを On にする
    ![dev](https://user-images.githubusercontent.com/62370527/138892416-9abb12dd-78ae-4e3d-bb83-31275dac535d.png)
 5. `パッケージ化されていない拡張機能を読み込む`をクリックし、解凍したzipファイルの中の`app`フォルダを選択
-6. 拡張機能の一覧に`Open-LMS-Tasks`が追加されていればインストール完了です。
+6. 拡張機能の一覧に`Open-LMS-Tasks`が追加されていればインストール完了です
 
 ## Usage
 
