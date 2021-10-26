@@ -40,6 +40,7 @@ class LMSManager {
         task = new Quiz(id);
     }
     await task.execute();
+    console.log('Open LMS Tasks has completed working');
   }
 
   private extractId(url: string) {

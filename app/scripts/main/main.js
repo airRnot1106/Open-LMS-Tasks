@@ -38,6 +38,7 @@ class LMSManager {
                 task = new Quiz(id);
         }
         await task.execute();
+        console.log('Open LMS Tasks has completed working');
     }
     extractId(url) {
         const idPart = url.match(/(id|cmid)=\d+/);
