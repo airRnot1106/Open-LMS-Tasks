@@ -1,6 +1,6 @@
 {
   "name": "Open-LMS-Tasks",
-  "short_name": "OLC",
+  "short_name": "OLT",
   "description": "Open LMSの課題の一覧を表示します",
   "version": "0.1.0",
   "manifest_version": 3,
