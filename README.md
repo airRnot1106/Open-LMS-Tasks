@@ -8,29 +8,31 @@
 
 ## Install
 
-1. `chrome://extensions/`にアクセス
-
-2. 右上のデベロッパーモードを On にする
+1. GitHub の Releases から最新バージョンのコードをダウンロード
+   ![releases](https://user-images.githubusercontent.com/62370527/138903018-7e2a9e70-6c8a-46f5-ba5c-4778cb7fd3dc.png)
+2. Source Code (zip)をクリックし、好きな場所に保存
+   ![source](https://user-images.githubusercontent.com/62370527/138903635-dd3c3614-5527-4654-8a81-4bc6ac4611d8.png)
+3. `chrome://extensions/`にアクセス
+4. 右上のデベロッパーモードを On にする
    ![dev](https://user-images.githubusercontent.com/62370527/138892416-9abb12dd-78ae-4e3d-bb83-31275dac535d.png)
-3. a
+5. `パッケージ化されていない拡張機能を読み込む`をクリックし、解凍したzipファイルの中の`app`フォルダを選択
+6. 拡張機能の一覧に`Open-LMS-Tasks`が追加されていればインストール完了です。
 
 ## Usage
 
 拡張機能の欄から Open-LMS-Task をクリックすると、ポップアップが表示されます。
 
-![usage01](https://user-images.githubusercontent.com/62370527/138893838-124d1e9e-b493-4f5a-bc75-511a1fcc28ff.png)
+<img src="https://user-images.githubusercontent.com/62370527/138893838-124d1e9e-b493-4f5a-bc75-511a1fcc28ff.png" width="50%">
 
 ポップアップには課題の一覧が表示されます。
 
-![usage02](https://user-images.githubusercontent.com/62370527/138894751-1aed5086-c71b-4eed-a7e4-a33288386071.png)
+<img src="https://user-images.githubusercontent.com/62370527/138894751-1aed5086-c71b-4eed-a7e4-a33288386071.png" width="50%">
 
 インストールした時点ではまだ何も表示されません。課題が一覧に表示されるためには、Open LMS 上で一度課題のページにアクセスする必要があります。<br>
 
-古い課題は自動的に非表示になります。すべて表示するには`show all`をOnにしてください。<br>
+古い課題は自動的に非表示になります。すべて表示するには`show all`を On にしてください。<br>
 
 `リセット`を押すと課題データが初期化されます。ご注意ください。
-
-
 
 ## Note
 
@@ -40,7 +42,7 @@ Open-LMS-Tasks は非公式のツールです。当ソフトの利用にあた�
 
 ## Contributing
 
-バグ報告や要望はissueまたはTwitterまでお願いします。
+バグ報告や要望は issue または Twitter までお願いします。
 
 ## Author
 
