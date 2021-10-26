@@ -1,4 +1,6 @@
 import dayjs from 'dayjs';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+dayjs.extend(isSameOrAfter);
 
 class LocalStorage {
   static async get() {
@@ -123,7 +125,8 @@ class TaskList {
     this._categoryButton.changeButtonState(this._categoryState);
     const storageData = await LocalStorage.get();
     const filteredData = this.filterStorageData(storageData);
-    this.paginate(Task.toArrays(filteredData));
+    const sortedData = this.sort(Task.toArrays(filteredData));
+    this.paginate(sortedData);
     this.refreshTable();
   }
 
@@ -145,6 +148,19 @@ class TaskList {
         break;
     }
     return categorizedData;
+  }
+
+  private sort(tableRows: ListRow[]) {
+    tableRows.sort((a, b) => {
+      const first = dayjs(a[3]);
+      const second = dayjs(b[3]);
+      if (first.isAfter(second)) {
+        return 1;
+      } else {
+        return -1;
+      }
+    });
+    return tableRows;
   }
 
   private paginate(tableRows: ListRow[]) {

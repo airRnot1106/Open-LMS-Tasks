@@ -11,6 +11,16 @@
 
 /***/ }),
 
+/***/ "./node_modules/dayjs/plugin/isSameOrAfter.js":
+/*!****************************************************!*\
+  !*** ./node_modules/dayjs/plugin/isSameOrAfter.js ***!
+  \****************************************************/
+/***/ (function(module) {
+
+!function(e,t){ true?module.exports=t():0}(this,(function(){"use strict";return function(e,t){t.prototype.isSameOrAfter=function(e,t){return this.isSame(e,t)||this.isAfter(e,t)}}}));
+
+/***/ }),
+
 /***/ "./src/popup/popup.ts":
 /*!****************************!*\
   !*** ./src/popup/popup.ts ***!
@@ -24,6 +34,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const dayjs_1 = __importDefault(__webpack_require__(/*! dayjs */ "./node_modules/dayjs/dayjs.min.js"));
+const isSameOrAfter_1 = __importDefault(__webpack_require__(/*! dayjs/plugin/isSameOrAfter */ "./node_modules/dayjs/plugin/isSameOrAfter.js"));
+dayjs_1.default.extend(isSameOrAfter_1.default);
 class LocalStorage {
     static async get() {
         const storageData = await this.fetch();
@@ -132,7 +144,8 @@ class TaskList {
         this._categoryButton.changeButtonState(this._categoryState);
         const storageData = await LocalStorage.get();
         const filteredData = this.filterStorageData(storageData);
-        this.paginate(Task.toArrays(filteredData));
+        const sortedData = this.sort(Task.toArrays(filteredData));
+        this.paginate(sortedData);
         this.refreshTable();
     }
     filterStorageData(storageData) {
@@ -153,6 +166,19 @@ class TaskList {
                 break;
         }
         return categorizedData;
+    }
+    sort(tableRows) {
+        tableRows.sort((a, b) => {
+            const first = (0, dayjs_1.default)(a[3]);
+            const second = (0, dayjs_1.default)(b[3]);
+            if (first.isAfter(second)) {
+                return 1;
+            }
+            else {
+                return -1;
+            }
+        });
+        return tableRows;
     }
     paginate(tableRows) {
         const paginatedData = [];
