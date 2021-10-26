@@ -113,11 +113,13 @@ class TaskList {
     _categoryState;
     _pages;
     _currentPage;
+    _isAllShow;
     constructor() {
         this._categoryButton = CategoryButton.instance;
         this._categoryState = 0;
         this._pages = [];
         this._currentPage = 0;
+        this._isAllShow = false;
     }
     static get instance() {
         if (!this._instance) {
@@ -140,13 +142,20 @@ class TaskList {
         }
         this.refreshTable();
     }
+    async updateIsAllShow(isAllShow) {
+        this._isAllShow = isAllShow;
+        this._currentPage = 0;
+        await this.categorize();
+    }
     async categorize() {
         this._categoryButton.changeButtonState(this._categoryState);
         const storageData = await LocalStorage.get();
         const filteredData = this.filterStorageData(storageData);
         const sortedData = this.sort(Task.toArrays(filteredData));
         this.paginate(sortedData);
-        this.purgePage();
+        if (!this._isAllShow) {
+            this.purgePage();
+        }
         this.refreshTable();
     }
     filterStorageData(storageData) {
@@ -248,6 +257,11 @@ document.getElementById('prev')?.addEventListener('click', async () => {
 document.getElementById('next')?.addEventListener('click', async () => {
     TaskList.instance.updateCurrentPage(1);
 }, false);
+document.getElementById('toggle')?.addEventListener('click', async () => {
+    const toggle = document.getElementById('toggle');
+    console.log('aa');
+    TaskList.instance.updateIsAllShow(toggle.checked);
+});
 document.getElementById('resetBtn')?.addEventListener('click', async () => {
     await LocalStorage.reset();
     await TaskList.instance.updateCategoryState(0);

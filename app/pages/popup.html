@@ -87,20 +87,49 @@
             </button>
           </div>
         </div>
-        <div class="reset text-right px-2 py-1">
-          <button
-            id="resetBtn"
-            class="text-gray-500 text-xs border rounded-full px-2"
-          >
-            リセット
-          </button>
+        <div class="flex items-center justify-end w-full">
+          <label for="toggle" class="flex items-center cursor-pointer">
+            <div class="mr-3"><span>show all: </span></div>
+            <div class="relative">
+              <input id="toggle" type="checkbox" class="sr-only" />
+              <div class="w-9 h-3 bg-gray-400 rounded-full shadow-inner"></div>
+              <div
+                class="
+                  dot
+                  absolute
+                  w-5
+                  h-5
+                  bg-white
+                  rounded-full
+                  shadow
+                  -left-1
+                  -top-1
+                  transition
+                "
+              ></div>
+            </div>
+          </label>
         </div>
       </div>
     </div>
     <footer>
       <div class="bg-heavy-blue">
         <div class="p-2 text-lg flex justify-between">
-          <div></div>
+          <div class="reset text-right px-2 py-1">
+            <button
+              id="resetBtn"
+              class="
+                text-gray-500
+                bg-[#f8f9fa]
+                text-xs
+                border
+                rounded-full
+                px-2
+              "
+            >
+              リセット
+            </button>
+          </div>
           <div>
             <a
               id="openLmsLink"

@@ -90,11 +90,13 @@ class TaskList {
   private _categoryState: CategoryTypeNumber;
   private _pages: ListRow[][];
   private _currentPage: number;
+  private _isAllShow: boolean;
   constructor() {
     this._categoryButton = CategoryButton.instance;
     this._categoryState = 0;
     this._pages = [];
     this._currentPage = 0;
+    this._isAllShow = false;
   }
 
   static get instance() {
@@ -121,13 +123,21 @@ class TaskList {
     this.refreshTable();
   }
 
+  async updateIsAllShow(isAllShow: boolean) {
+    this._isAllShow = isAllShow;
+    this._currentPage = 0;
+    await this.categorize();
+  }
+
   private async categorize() {
     this._categoryButton.changeButtonState(this._categoryState);
     const storageData = await LocalStorage.get();
     const filteredData = this.filterStorageData(storageData);
     const sortedData = this.sort(Task.toArrays(filteredData));
     this.paginate(sortedData);
-    this.purgePage();
+    if (!this._isAllShow) {
+      this.purgePage();
+    }
     this.refreshTable();
   }
 
@@ -258,6 +268,12 @@ document.getElementById('next')?.addEventListener(
   },
   false
 );
+
+document.getElementById('toggle')?.addEventListener('click', async () => {
+  const toggle = <HTMLInputElement>document.getElementById('toggle')!;
+  console.log('aa');
+  TaskList.instance.updateIsAllShow(toggle.checked);
+});
 
 document.getElementById('resetBtn')?.addEventListener(
   'click',
