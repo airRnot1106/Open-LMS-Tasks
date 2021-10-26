@@ -119,18 +119,21 @@ class LMSManager {
         const deadline = (() => {
             const info = document.querySelector('.quizinfo');
             const index = info.children.length - 2;
-            const rawDate = info.children[index].textContent;
-            const date = rawDate.split(/この小テストは |年 |月 |日\(\S曜日\) | に終了しま\S*/);
+            const rawDate = info.children[index].textContent +
+                info.children[index + 1].textContent;
+            const date = rawDate.split(/\S*は |年 |月 |日\(\S曜日\) | に\S*/);
             const day = date.slice(1, 4).join('/');
             const time = date.slice(4, 5).join();
             return day + ' ' + time;
         })();
         const submissionState = (() => {
-            const tbody = document
-                .querySelector('.generaltable')
-                .querySelector('tbody');
-            const rawState = tbody?.children[0].querySelector('.c1')?.textContent;
-            return rawState.includes('終了') ? '提出済み' : '未提出';
+            const table = document.querySelector('.generaltable');
+            if (!!table) {
+                return '提出済み';
+            }
+            else {
+                return '未提出';
+            }
         })();
         const quiz = {
             taskName: taskName,
@@ -142,14 +145,22 @@ class LMSManager {
         return quiz;
     }
     checkStatUpdate(task) {
-        const tbody = document
-            .querySelector('.generaltable')
-            .querySelector('tbody');
-        const rawState = tbody?.children[0].querySelector('.c1')?.textContent;
-        const submissionState = rawState.includes('提出済み') || rawState.includes('終了')
-            ? '提出済み'
-            : '未提出';
-        task.submissionState = submissionState;
+        switch (task.type) {
+            case 'assign':
+                const tbody = document
+                    .querySelector('.generaltable')
+                    .querySelector('tbody');
+                const rawState = tbody?.children[0].querySelector('.c1')?.textContent;
+                const submissionState = rawState.includes('提出済み')
+                    ? '提出済み'
+                    : '未提出';
+                task.submissionState = submissionState;
+                break;
+            case 'quiz':
+                const table = document.querySelector('.generaltable');
+                task.submissionState = !!table ? '提出済み' : '未提出';
+                break;
+        }
     }
 }
 (async () => {
