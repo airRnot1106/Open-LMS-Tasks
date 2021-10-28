@@ -44,6 +44,10 @@ class LocalStorage {
         });
         return parsedJsonData;
     }
+    static async getRaw() {
+        const storageData = await this.fetch();
+        return storageData;
+    }
     static async fetch() {
         return new Promise((resolve) => {
             chrome.storage.local.get((data) => {
@@ -120,15 +124,35 @@ class CategoryButton {
         }
     }
 }
+class Menu {
+    static _instance;
+    static get instance() {
+        if (!this._instance) {
+            this._instance = new Menu();
+        }
+        return this._instance;
+    }
+    async export() {
+        const content = await LocalStorage.getRaw();
+        const blob = new Blob([JSON.stringify(content)], {
+            type: 'text/plane',
+        });
+        const link = document.getElementById('exportLink');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = (0, dayjs_1.default)().format('YYYYMMDDHHmmss') + '.olt';
+    }
+}
 class TaskList {
     static _instance;
     _categoryButton;
+    _menu;
     _categoryState;
     _pages;
     _currentPage;
     _isAllShow;
     constructor() {
         this._categoryButton = CategoryButton.instance;
+        this._menu = Menu.instance;
         this._categoryState = 0;
         this._pages = [];
         this._currentPage = 0;
@@ -171,6 +195,9 @@ class TaskList {
             menu.classList.add('hidden');
             menuBtn.checked = false;
         }
+    }
+    async exportTaskData() {
+        await this._menu.export();
     }
     async categorize() {
         this._categoryButton.changeButtonState(this._categoryState);
@@ -314,6 +341,9 @@ document.addEventListener('click', (e) => {
         TaskList.instance.updateMenuDisplay(false);
     }
 });
+window.onload = async () => {
+    await TaskList.instance.exportTaskData();
+};
 
 
 /***/ })

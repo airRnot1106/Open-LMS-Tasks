@@ -102,15 +102,37 @@ class CategoryButton {
   }
 }
 
+class Menu {
+  private static _instance: Menu;
+  static get instance() {
+    if (!this._instance) {
+      this._instance = new Menu();
+    }
+    return this._instance;
+  }
+
+  async export() {
+    const content = await LocalStorage.getRaw();
+    const blob = new Blob([JSON.stringify(content)], {
+      type: 'text/plane',
+    });
+    const link = <HTMLAnchorElement>document.getElementById('exportLink')!;
+    link.href = window.URL.createObjectURL(blob);
+    link.download = dayjs().format('YYYYMMDDHHmmss') + '.olt';
+  }
+}
+
 class TaskList {
   private static _instance: TaskList;
   private readonly _categoryButton: CategoryButton;
+  private readonly _menu: Menu;
   private _categoryState: CategoryTypeNumber;
   private _pages: ListRow[][];
   private _currentPage: number;
   private _isAllShow: boolean;
   constructor() {
     this._categoryButton = CategoryButton.instance;
+    this._menu = Menu.instance;
     this._categoryState = 0;
     this._pages = [];
     this._currentPage = 0;
@@ -157,6 +179,10 @@ class TaskList {
       menu.classList.add('hidden');
       menuBtn.checked = false;
     }
+  }
+
+  async exportTaskData() {
+    await this._menu.export();
   }
 
   private async categorize() {
@@ -347,3 +373,7 @@ document.addEventListener('click', (e) => {
     TaskList.instance.updateMenuDisplay(false);
   }
 });
+
+window.onload = async () => {
+  await TaskList.instance.exportTaskData();
+};
