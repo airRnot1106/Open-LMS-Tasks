@@ -111,24 +111,32 @@
           </label>
         </div>
       </div>
+      <div id="menu" class="relative m-0 hidden">
+        <div class="menu absolute bottom-0 left-0 flex flex-col bg-heavy-blue">
+          <button class="p-2 text-left text-[#f8f9fa] hover:bg-gray-500">
+            リセット
+          </button>
+          <button class="p-2 text-left text-[#f8f9fa] hover:bg-gray-500">
+            インポート
+          </button>
+          <button class="p-2 text-left text-[#f8f9fa] hover:bg-gray-500">
+            エクスポート
+          </button>
+        </div>
+      </div>
     </div>
     <footer>
       <div class="bg-heavy-blue">
-        <div class="p-2 text-lg flex justify-between">
-          <div class="reset text-right">
-            <button
-              id="resetBtn"
-              class="
-                text-gray-500
-                bg-[#f8f9fa]
-                text-xs
-                border
-                rounded-full
-                px-2
-              "
-            >
-              リセット
-            </button>
+        <div class="p-2 text-lg flex items-center justify-between">
+          <div class="menuBtn flex items-center">
+            <label for="menuBtn" class="cursor-pointer">
+              <input id="menuBtn" type="checkbox" class="sr-only" />
+              <img
+                id="menuImg"
+                src="../images/ui/menu-48.svg"
+                width="24"
+                height="24"
+            /></label>
           </div>
           <div>
             <a

@@ -72,6 +72,19 @@ class Task {
         });
     }
 }
+class ElementAction {
+    static expand(element) {
+        if (element.childElementCount) {
+            const els = Array.from(element.children).map((child) => {
+                return this.expand(child);
+            });
+            return els.flat();
+        }
+        else {
+            return [element];
+        }
+    }
+}
 class CategoryButton {
     static _instance;
     static get instance() {
@@ -146,6 +159,18 @@ class TaskList {
         this._isAllShow = isAllShow;
         this._currentPage = 0;
         await this.categorize();
+    }
+    updateMenuDisplay(isShow) {
+        const menu = document.getElementById('menu');
+        const menuBtn = document.getElementById('menuBtn');
+        if (isShow) {
+            menu.classList.remove('hidden');
+            menuBtn.checked = true;
+        }
+        else {
+            menu.classList.add('hidden');
+            menuBtn.checked = false;
+        }
     }
     async categorize() {
         this._categoryButton.changeButtonState(this._categoryState);
@@ -257,21 +282,38 @@ document.getElementById('prev')?.addEventListener('click', async () => {
 document.getElementById('next')?.addEventListener('click', async () => {
     TaskList.instance.updateCurrentPage(1);
 }, false);
-document.getElementById('toggle')?.addEventListener('click', async () => {
-    const toggle = document.getElementById('toggle');
-    TaskList.instance.updateIsAllShow(toggle.checked);
+document.getElementById('toggle')?.addEventListener('click', async (e) => {
+    TaskList.instance.updateIsAllShow(e.currentTarget.checked);
 });
 document.getElementById('resetBtn')?.addEventListener('click', async () => {
     await LocalStorage.reset();
     await TaskList.instance.updateCategoryState(0);
 }, false);
-document.getElementById('openLmsLink')?.addEventListener('click', async () => {
-    const link = document.getElementById('openLmsLink');
+document.getElementById('menuBtn')?.addEventListener('click', (e) => {
+    TaskList.instance.updateMenuDisplay(e.currentTarget.checked);
+});
+document.getElementById('openLmsLink')?.addEventListener('click', async (e) => {
     await chrome.tabs.create({
         active: true,
-        url: link.href,
+        url: e.currentTarget.href,
     });
 }, false);
+document.addEventListener('click', (e) => {
+    const menuBtn = document.getElementById('menuBtn');
+    const menu = document.getElementById('menu');
+    const menuIgm = document.getElementById('menuImg');
+    const els = [menuBtn, menuIgm, ...ElementAction.expand(menu)];
+    let isValid = false;
+    for (const el of els) {
+        if (e.target.isEqualNode(el)) {
+            isValid = true;
+            break;
+        }
+    }
+    if (!isValid) {
+        TaskList.instance.updateMenuDisplay(false);
+    }
+});
 
 
 /***/ })

@@ -43,6 +43,19 @@ class Task {
   }
 }
 
+class ElementAction {
+  static expand(element: Element): Element[] {
+    if (element.childElementCount) {
+      const els = Array.from(element.children).map((child) => {
+        return this.expand(child);
+      });
+      return els.flat();
+    } else {
+      return [element];
+    }
+  }
+}
+
 class CategoryButton {
   private static _instance: CategoryButton;
   static get instance() {
@@ -127,6 +140,18 @@ class TaskList {
     this._isAllShow = isAllShow;
     this._currentPage = 0;
     await this.categorize();
+  }
+
+  updateMenuDisplay(isShow: boolean) {
+    const menu = document.getElementById('menu')!;
+    const menuBtn = <HTMLInputElement>document.getElementById('menuBtn');
+    if (isShow) {
+      menu.classList.remove('hidden');
+      menuBtn.checked = true;
+    } else {
+      menu.classList.add('hidden');
+      menuBtn.checked = false;
+    }
   }
 
   private async categorize() {
@@ -269,9 +294,10 @@ document.getElementById('next')?.addEventListener(
   false
 );
 
-document.getElementById('toggle')?.addEventListener('click', async () => {
-  const toggle = <HTMLInputElement>document.getElementById('toggle')!;
-  TaskList.instance.updateIsAllShow(toggle.checked);
+document.getElementById('toggle')?.addEventListener('click', async (e) => {
+  TaskList.instance.updateIsAllShow(
+    (<HTMLInputElement>e.currentTarget).checked
+  );
 });
 
 document.getElementById('resetBtn')?.addEventListener(
@@ -283,14 +309,36 @@ document.getElementById('resetBtn')?.addEventListener(
   false
 );
 
+document.getElementById('menuBtn')?.addEventListener('click', (e) => {
+  TaskList.instance.updateMenuDisplay(
+    (<HTMLInputElement>e.currentTarget).checked
+  );
+});
+
 document.getElementById('openLmsLink')?.addEventListener(
   'click',
-  async () => {
-    const link = <HTMLLinkElement>document.getElementById('openLmsLink')!;
+  async (e) => {
     await chrome.tabs.create({
       active: true,
-      url: link.href,
+      url: (<HTMLLinkElement>e.currentTarget).href,
     });
   },
   false
 );
+
+document.addEventListener('click', (e) => {
+  const menuBtn = document.getElementById('menuBtn')!;
+  const menu = document.getElementById('menu')!;
+  const menuIgm = document.getElementById('menuImg');
+  const els = [menuBtn, menuIgm, ...ElementAction.expand(menu)];
+  let isValid = false;
+  for (const el of els) {
+    if ((<HTMLElement>e.target).isEqualNode(el)) {
+      isValid = true;
+      break;
+    }
+  }
+  if (!isValid) {
+    TaskList.instance.updateMenuDisplay(false);
+  }
+});
