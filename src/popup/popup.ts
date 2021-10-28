@@ -4,14 +4,19 @@ dayjs.extend(isSameOrAfter);
 
 class LocalStorage {
   static async get() {
-    const storageData = <{ [id: string]: string }>await this.fetch();
+    const storageData = await this.fetch();
     const parsedJsonData = Object.entries(storageData).map(([, taskObj]) => {
       return <TaskObj>JSON.parse(taskObj);
     });
     return parsedJsonData;
   }
 
-  private static async fetch() {
+  static async getRaw() {
+    const storageData = await this.fetch();
+    return storageData;
+  }
+
+  private static async fetch(): Promise<{ [id: string]: string }> {
     return new Promise((resolve) => {
       chrome.storage.local.get((data) => {
         resolve(data);
@@ -20,7 +25,7 @@ class LocalStorage {
   }
 
   static async reset() {
-    const storageData = <{ [id: string]: string }>await this.fetch();
+    const storageData = await this.fetch();
     await chrome.storage.local.remove(Object.keys(storageData));
   }
 }
