@@ -178,7 +178,7 @@ class TaskList {
         const filteredData = this.filterStorageData(storageData);
         const sortedData = this.sort(Task.toArrays(filteredData));
         this.paginate(sortedData);
-        if (!this._isAllShow) {
+        if (!this._isAllShow && this._categoryButton.state !== 2) {
             this.purgePage();
         }
         this.refreshTable();
@@ -274,6 +274,9 @@ class CategoryButton {
             this._instance = new CategoryButton();
         }
         return this._instance;
+    }
+    get state() {
+        return this._state;
     }
     changeButtonState(btnId) {
         this._state = btnId;
