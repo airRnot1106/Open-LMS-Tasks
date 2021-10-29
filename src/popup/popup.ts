@@ -4,14 +4,19 @@ dayjs.extend(isSameOrAfter);
 
 class LocalStorage {
   static async get() {
-    const storageData = <{ [id: string]: string }>await this.fetch();
+    const storageData = await this.fetch();
     const parsedJsonData = Object.entries(storageData).map(([, taskObj]) => {
       return <TaskObj>JSON.parse(taskObj);
     });
     return parsedJsonData;
   }
 
-  private static async fetch() {
+  static async getRaw() {
+    const storageData = await this.fetch();
+    return storageData;
+  }
+
+  private static async fetch(): Promise<{ [id: string]: string }> {
     return new Promise((resolve) => {
       chrome.storage.local.get((data) => {
         resolve(data);
@@ -19,8 +24,29 @@ class LocalStorage {
     });
   }
 
+  static async set(item: { [id: string]: string }) {
+    if (!Object.keys(item).length) {
+      throw new Error('空のデータです');
+    }
+    for (const id in item) {
+      for (const key in JSON.parse(item[id])) {
+        const keys = [
+          'taskName',
+          'className',
+          'type',
+          'deadline',
+          'submissionState',
+        ];
+        if (!keys.includes(key)) {
+          throw new Error('データが破損しています');
+        }
+      }
+    }
+    await chrome.storage.local.set(item);
+  }
+
   static async reset() {
-    const storageData = <{ [id: string]: string }>await this.fetch();
+    const storageData = await this.fetch();
     await chrome.storage.local.remove(Object.keys(storageData));
   }
 }
@@ -43,43 +69,15 @@ class Task {
   }
 }
 
-class CategoryButton {
-  private static _instance: CategoryButton;
-  static get instance() {
-    if (!this._instance) {
-      this._instance = new CategoryButton();
-    }
-    return this._instance;
-  }
-
-  changeButtonState(btnId: CategoryTypeNumber) {
-    const catButtonsList = document.getElementById('catButtons')?.childNodes;
-    const catButtonsArray: HTMLElement[] = [];
-    catButtonsList?.forEach((value, index, list) => {
-      if (index === 0 || index === list.length - 1) return;
-      catButtonsArray.push(<HTMLElement>value);
-    });
-    this.clearClass(catButtonsArray);
-    this.activeClass(catButtonsArray, btnId);
-  }
-
-  private clearClass(catButtons: HTMLElement[]) {
-    for (const catButton of catButtons) {
-      catButton.classList.remove(
-        'border-blue-400',
-        'bg-blue-300',
-        'hover:bg-blue-100'
-      );
-    }
-  }
-
-  private activeClass(catButtons: HTMLElement[], btnId: CategoryTypeNumber) {
-    for (let i = 0; i < catButtons.length; i++) {
-      if (i === btnId) {
-        catButtons[i].classList.add('border-blue-400', 'bg-blue-300');
-      } else {
-        catButtons[i].classList.add('hover:bg-blue-100');
-      }
+class ElementAction {
+  static expand(element: Element): Element[] {
+    if (element.childElementCount) {
+      const els = Array.from(element.children).map((child) => {
+        return this.expand(child);
+      });
+      return [element, ...els.flat()];
+    } else {
+      return [element];
     }
   }
 }
@@ -87,12 +85,14 @@ class CategoryButton {
 class TaskList {
   private static _instance: TaskList;
   private readonly _categoryButton: CategoryButton;
+  private readonly _menu: Menu;
   private _categoryState: CategoryTypeNumber;
   private _pages: ListRow[][];
   private _currentPage: number;
   private _isAllShow: boolean;
   constructor() {
     this._categoryButton = CategoryButton.instance;
+    this._menu = Menu.instance;
     this._categoryState = 0;
     this._pages = [];
     this._currentPage = 0;
@@ -129,13 +129,37 @@ class TaskList {
     await this.categorize();
   }
 
+  updateMenuDisplay(isShow: boolean) {
+    const menu = document.getElementById('menu')!;
+    const menuBtn = <HTMLInputElement>document.getElementById('menuBtn');
+    if (isShow) {
+      menu.classList.remove('hidden');
+      menuBtn.checked = true;
+    } else {
+      menu.classList.add('hidden');
+      menuBtn.checked = false;
+    }
+  }
+
+  async resetTaskData() {
+    await this._menu.reset();
+  }
+
+  async importTaskData(file: string) {
+    await this._menu.import(file);
+  }
+
+  async exportTaskData() {
+    await this._menu.export();
+  }
+
   private async categorize() {
     this._categoryButton.changeButtonState(this._categoryState);
     const storageData = await LocalStorage.get();
     const filteredData = this.filterStorageData(storageData);
     const sortedData = this.sort(Task.toArrays(filteredData));
     this.paginate(sortedData);
-    if (!this._isAllShow) {
+    if (!this._isAllShow && this._categoryButton.state !== 2) {
       this.purgePage();
     }
     this.refreshTable();
@@ -224,6 +248,91 @@ class TaskList {
   }
 }
 
+class CategoryButton {
+  private static _instance: CategoryButton;
+  private _state: CategoryTypeNumber;
+  constructor() {
+    this._state = 0;
+  }
+  static get instance() {
+    if (!this._instance) {
+      this._instance = new CategoryButton();
+    }
+    return this._instance;
+  }
+  get state() {
+    return this._state;
+  }
+
+  changeButtonState(btnId: CategoryTypeNumber) {
+    this._state = btnId;
+    const catButtonsList = document.getElementById('catButtons')?.childNodes;
+    const catButtonsArray: HTMLElement[] = [];
+    catButtonsList?.forEach((value, index, list) => {
+      if (index === 0 || index === list.length - 1) return;
+      catButtonsArray.push(<HTMLElement>value);
+    });
+    this.clearClass(catButtonsArray);
+    this.activeClass(catButtonsArray);
+  }
+
+  private clearClass(catButtons: HTMLElement[]) {
+    for (const catButton of catButtons) {
+      catButton.classList.remove(
+        'border-blue-400',
+        'bg-blue-300',
+        'hover:bg-blue-100'
+      );
+    }
+  }
+
+  private activeClass(catButtons: HTMLElement[]) {
+    for (let i = 0; i < catButtons.length; i++) {
+      if (i === this._state) {
+        catButtons[i].classList.add('border-blue-400', 'bg-blue-300');
+      } else {
+        catButtons[i].classList.add('hover:bg-blue-100');
+      }
+    }
+  }
+}
+
+class Menu {
+  private static _instance: Menu;
+  static get instance() {
+    if (!this._instance) {
+      this._instance = new Menu();
+    }
+    return this._instance;
+  }
+
+  async reset() {
+    await LocalStorage.reset();
+    await TaskList.instance.updateCategoryState(0);
+  }
+
+  async import(content: string) {
+    try {
+      const parsedData = <{ [id: string]: string }>JSON.parse(content);
+      await LocalStorage.reset();
+      await LocalStorage.set(parsedData);
+      await TaskList.instance.updateCategoryState(0);
+    } catch (error) {
+      alert(error);
+    }
+  }
+
+  async export() {
+    const content = await LocalStorage.getRaw();
+    const blob = new Blob([JSON.stringify(content)], {
+      type: 'text/plane',
+    });
+    const link = <HTMLAnchorElement>document.getElementById('exportLink')!;
+    link.href = window.URL.createObjectURL(blob);
+    link.download = dayjs().format('YYYYMMDDHHmmss') + '.olt';
+  }
+}
+
 (async () => {
   TaskList.instance.showDate();
   await TaskList.instance.updateCategoryState(0);
@@ -269,28 +378,71 @@ document.getElementById('next')?.addEventListener(
   false
 );
 
-document.getElementById('toggle')?.addEventListener('click', async () => {
-  const toggle = <HTMLInputElement>document.getElementById('toggle')!;
-  TaskList.instance.updateIsAllShow(toggle.checked);
+document.getElementById('toggle')?.addEventListener('click', async (e) => {
+  TaskList.instance.updateIsAllShow(
+    (<HTMLInputElement>e.currentTarget).checked
+  );
 });
 
 document.getElementById('resetBtn')?.addEventListener(
   'click',
   async () => {
-    await LocalStorage.reset();
-    await TaskList.instance.updateCategoryState(0);
+    await TaskList.instance.resetTaskData();
   },
   false
 );
 
+document.getElementById('importLink')?.addEventListener('change', (e) => {
+  const files = (<HTMLInputElement>e.currentTarget).files;
+  if (!files) return;
+  const target = files[0];
+  if (!target.name.endsWith('.olt')) {
+    alert('ファイルの形式が正しくありません');
+    return;
+  }
+  const reader = new FileReader();
+  reader.readAsText(target, 'utf-8');
+  reader.onload = () => {
+    TaskList.instance.importTaskData(<string>reader.result);
+  };
+});
+
+document.getElementById('menuBtn')?.addEventListener('click', (e) => {
+  TaskList.instance.updateMenuDisplay(
+    (<HTMLInputElement>e.currentTarget).checked
+  );
+});
+
 document.getElementById('openLmsLink')?.addEventListener(
   'click',
-  async () => {
-    const link = <HTMLLinkElement>document.getElementById('openLmsLink')!;
+  async (e) => {
     await chrome.tabs.create({
       active: true,
-      url: link.href,
+      url: (<HTMLLinkElement>e.currentTarget).href,
     });
   },
   false
 );
+
+document.addEventListener('click', (e) => {
+  const menuBtnLabel = document.getElementById('menuBtnLabel')!;
+  const menu = document.getElementById('menu')!;
+  const els = [
+    ...ElementAction.expand(menuBtnLabel),
+    ...ElementAction.expand(menu),
+  ];
+  let isValid = false;
+  for (const el of els) {
+    if ((<HTMLElement>e.target).isEqualNode(el)) {
+      isValid = true;
+      break;
+    }
+  }
+  if (!isValid) {
+    TaskList.instance.updateMenuDisplay(false);
+  }
+});
+
+window.onload = async () => {
+  await TaskList.instance.exportTaskData();
+};
