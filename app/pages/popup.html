@@ -111,23 +111,26 @@
           </label>
         </div>
       </div>
-      <div id="menu" class="relative m-0 hidden">
+      <div id="menu" class="relative hidden">
         <div class="menu absolute bottom-0 left-0 flex flex-col bg-heavy-blue">
           <button
             id="resetBtn"
-            class="p-2 text-left text-[#f8f9fa] hover:bg-gray-500"
+            class="flex p-2 text-[#f8f9fa] hover:bg-gray-500"
           >
-            リセット
+            <span>リセット</span>
           </button>
-          <button
-            id="importBtn"
-            class="p-2 text-left text-[#f8f9fa] hover:bg-gray-500"
+
+          <label
+            for="importLink"
+            class="flex p-2 cursor-pointer text-[#f8f9fa] hover:bg-gray-500"
           >
             インポート
-          </button>
+            <input id="importLink" class="hidden" type="file" />
+          </label>
+
           <button
             id="exportBtn"
-            class="p-2 text-left text-[#f8f9fa] hover:bg-gray-500"
+            class="flex p-2 text-[#f8f9fa] hover:bg-gray-500"
           >
             <a id="exportLink" href="#">エクスポート</a>
           </button>
@@ -137,8 +140,8 @@
     <footer>
       <div class="bg-heavy-blue">
         <div class="p-2 text-lg flex items-center justify-between">
-          <div class="menuBtn flex items-center">
-            <label for="menuBtn" class="cursor-pointer">
+          <div class="menuBtn flex">
+            <label for="menuBtn" id="menuBtnLabel" class="cursor-pointer">
               <input id="menuBtn" type="checkbox" class="sr-only" />
               <img
                 id="menuImg"

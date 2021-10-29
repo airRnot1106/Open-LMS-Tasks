@@ -55,6 +55,26 @@ class LocalStorage {
             });
         });
     }
+    static async set(item) {
+        if (!Object.keys(item).length) {
+            throw new Error('空のデータです');
+        }
+        for (const id in item) {
+            for (const key in JSON.parse(item[id])) {
+                const keys = [
+                    'taskName',
+                    'className',
+                    'type',
+                    'deadline',
+                    'submissionState',
+                ];
+                if (!keys.includes(key)) {
+                    throw new Error('データが破損しています');
+                }
+            }
+        }
+        await chrome.storage.local.set(item);
+    }
     static async reset() {
         const storageData = await this.fetch();
         await chrome.storage.local.remove(Object.keys(storageData));
@@ -82,7 +102,7 @@ class ElementAction {
             const els = Array.from(element.children).map((child) => {
                 return this.expand(child);
             });
-            return els.flat();
+            return [element, ...els.flat()];
         }
         else {
             return [element];
@@ -131,6 +151,21 @@ class Menu {
             this._instance = new Menu();
         }
         return this._instance;
+    }
+    async reset() {
+        await LocalStorage.reset();
+        await TaskList.instance.updateCategoryState(0);
+    }
+    async import(content) {
+        try {
+            const parsedData = JSON.parse(content);
+            await LocalStorage.reset();
+            await LocalStorage.set(parsedData);
+            await TaskList.instance.updateCategoryState(0);
+        }
+        catch (error) {
+            alert(error);
+        }
     }
     async export() {
         const content = await LocalStorage.getRaw();
@@ -195,6 +230,12 @@ class TaskList {
             menu.classList.add('hidden');
             menuBtn.checked = false;
         }
+    }
+    async resetTaskData() {
+        await this._menu.reset();
+    }
+    async importTaskData(file) {
+        await this._menu.import(file);
     }
     async exportTaskData() {
         await this._menu.export();
@@ -313,9 +354,23 @@ document.getElementById('toggle')?.addEventListener('click', async (e) => {
     TaskList.instance.updateIsAllShow(e.currentTarget.checked);
 });
 document.getElementById('resetBtn')?.addEventListener('click', async () => {
-    await LocalStorage.reset();
-    await TaskList.instance.updateCategoryState(0);
+    await TaskList.instance.resetTaskData();
 }, false);
+document.getElementById('importLink')?.addEventListener('change', (e) => {
+    const files = e.currentTarget.files;
+    if (!files)
+        return;
+    const target = files[0];
+    if (!target.name.endsWith('.olt')) {
+        alert('ファイルの形式が正しくありません');
+        return;
+    }
+    const reader = new FileReader();
+    reader.readAsText(target, 'utf-8');
+    reader.onload = () => {
+        TaskList.instance.importTaskData(reader.result);
+    };
+});
 document.getElementById('menuBtn')?.addEventListener('click', (e) => {
     TaskList.instance.updateMenuDisplay(e.currentTarget.checked);
 });
@@ -326,10 +381,12 @@ document.getElementById('openLmsLink')?.addEventListener('click', async (e) => {
     });
 }, false);
 document.addEventListener('click', (e) => {
-    const menuBtn = document.getElementById('menuBtn');
+    const menuBtnLabel = document.getElementById('menuBtnLabel');
     const menu = document.getElementById('menu');
-    const menuIgm = document.getElementById('menuImg');
-    const els = [menuBtn, menuIgm, ...ElementAction.expand(menu)];
+    const els = [
+        ...ElementAction.expand(menuBtnLabel),
+        ...ElementAction.expand(menu),
+    ];
     let isValid = false;
     for (const el of els) {
         if (e.target.isEqualNode(el)) {
