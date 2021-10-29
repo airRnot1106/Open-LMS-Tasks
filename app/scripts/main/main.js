@@ -135,7 +135,7 @@ class Assign extends BaseTask {
 class Quiz extends BaseTask {
     constructor(id) {
         super(id);
-        this._disallowPaths = ['attempt.php'];
+        this._disallowPaths = ['attempt.php', 'summary.php'];
     }
     async execute() {
         if (!this.isValidUrl(location.href))
