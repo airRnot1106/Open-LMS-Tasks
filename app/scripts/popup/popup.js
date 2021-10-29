@@ -109,74 +109,6 @@ class ElementAction {
         }
     }
 }
-class CategoryButton {
-    static _instance;
-    static get instance() {
-        if (!this._instance) {
-            this._instance = new CategoryButton();
-        }
-        return this._instance;
-    }
-    changeButtonState(btnId) {
-        const catButtonsList = document.getElementById('catButtons')?.childNodes;
-        const catButtonsArray = [];
-        catButtonsList?.forEach((value, index, list) => {
-            if (index === 0 || index === list.length - 1)
-                return;
-            catButtonsArray.push(value);
-        });
-        this.clearClass(catButtonsArray);
-        this.activeClass(catButtonsArray, btnId);
-    }
-    clearClass(catButtons) {
-        for (const catButton of catButtons) {
-            catButton.classList.remove('border-blue-400', 'bg-blue-300', 'hover:bg-blue-100');
-        }
-    }
-    activeClass(catButtons, btnId) {
-        for (let i = 0; i < catButtons.length; i++) {
-            if (i === btnId) {
-                catButtons[i].classList.add('border-blue-400', 'bg-blue-300');
-            }
-            else {
-                catButtons[i].classList.add('hover:bg-blue-100');
-            }
-        }
-    }
-}
-class Menu {
-    static _instance;
-    static get instance() {
-        if (!this._instance) {
-            this._instance = new Menu();
-        }
-        return this._instance;
-    }
-    async reset() {
-        await LocalStorage.reset();
-        await TaskList.instance.updateCategoryState(0);
-    }
-    async import(content) {
-        try {
-            const parsedData = JSON.parse(content);
-            await LocalStorage.reset();
-            await LocalStorage.set(parsedData);
-            await TaskList.instance.updateCategoryState(0);
-        }
-        catch (error) {
-            alert(error);
-        }
-    }
-    async export() {
-        const content = await LocalStorage.getRaw();
-        const blob = new Blob([JSON.stringify(content)], {
-            type: 'text/plane',
-        });
-        const link = document.getElementById('exportLink');
-        link.href = window.URL.createObjectURL(blob);
-        link.download = (0, dayjs_1.default)().format('YYYYMMDDHHmmss') + '.olt';
-    }
-}
 class TaskList {
     static _instance;
     _categoryButton;
@@ -329,6 +261,79 @@ class TaskList {
         const date = (0, dayjs_1.default)().format('YYYY/MM/DD HH:mm:ss');
         const element = document.getElementById('date');
         element.textContent = '最終更新: ' + date;
+    }
+}
+class CategoryButton {
+    static _instance;
+    _state;
+    constructor() {
+        this._state = 0;
+    }
+    static get instance() {
+        if (!this._instance) {
+            this._instance = new CategoryButton();
+        }
+        return this._instance;
+    }
+    changeButtonState(btnId) {
+        this._state = btnId;
+        const catButtonsList = document.getElementById('catButtons')?.childNodes;
+        const catButtonsArray = [];
+        catButtonsList?.forEach((value, index, list) => {
+            if (index === 0 || index === list.length - 1)
+                return;
+            catButtonsArray.push(value);
+        });
+        this.clearClass(catButtonsArray);
+        this.activeClass(catButtonsArray);
+    }
+    clearClass(catButtons) {
+        for (const catButton of catButtons) {
+            catButton.classList.remove('border-blue-400', 'bg-blue-300', 'hover:bg-blue-100');
+        }
+    }
+    activeClass(catButtons) {
+        for (let i = 0; i < catButtons.length; i++) {
+            if (i === this._state) {
+                catButtons[i].classList.add('border-blue-400', 'bg-blue-300');
+            }
+            else {
+                catButtons[i].classList.add('hover:bg-blue-100');
+            }
+        }
+    }
+}
+class Menu {
+    static _instance;
+    static get instance() {
+        if (!this._instance) {
+            this._instance = new Menu();
+        }
+        return this._instance;
+    }
+    async reset() {
+        await LocalStorage.reset();
+        await TaskList.instance.updateCategoryState(0);
+    }
+    async import(content) {
+        try {
+            const parsedData = JSON.parse(content);
+            await LocalStorage.reset();
+            await LocalStorage.set(parsedData);
+            await TaskList.instance.updateCategoryState(0);
+        }
+        catch (error) {
+            alert(error);
+        }
+    }
+    async export() {
+        const content = await LocalStorage.getRaw();
+        const blob = new Blob([JSON.stringify(content)], {
+            type: 'text/plane',
+        });
+        const link = document.getElementById('exportLink');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = (0, dayjs_1.default)().format('YYYYMMDDHHmmss') + '.olt';
     }
 }
 (async () => {

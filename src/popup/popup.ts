@@ -250,6 +250,10 @@ class TaskList {
 
 class CategoryButton {
   private static _instance: CategoryButton;
+  private _state: CategoryTypeNumber;
+  constructor() {
+    this._state = 0;
+  }
   static get instance() {
     if (!this._instance) {
       this._instance = new CategoryButton();
@@ -258,6 +262,7 @@ class CategoryButton {
   }
 
   changeButtonState(btnId: CategoryTypeNumber) {
+    this._state = btnId;
     const catButtonsList = document.getElementById('catButtons')?.childNodes;
     const catButtonsArray: HTMLElement[] = [];
     catButtonsList?.forEach((value, index, list) => {
@@ -265,7 +270,7 @@ class CategoryButton {
       catButtonsArray.push(<HTMLElement>value);
     });
     this.clearClass(catButtonsArray);
-    this.activeClass(catButtonsArray, btnId);
+    this.activeClass(catButtonsArray);
   }
 
   private clearClass(catButtons: HTMLElement[]) {
@@ -278,9 +283,9 @@ class CategoryButton {
     }
   }
 
-  private activeClass(catButtons: HTMLElement[], btnId: CategoryTypeNumber) {
+  private activeClass(catButtons: HTMLElement[]) {
     for (let i = 0; i < catButtons.length; i++) {
-      if (i === btnId) {
+      if (i === this._state) {
         catButtons[i].classList.add('border-blue-400', 'bg-blue-300');
       } else {
         catButtons[i].classList.add('hover:bg-blue-100');
