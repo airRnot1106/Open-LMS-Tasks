@@ -163,6 +163,7 @@ class TaskList {
       this.purgePage();
     }
     this.refreshTable();
+    this.showBadge();
   }
 
   private filterStorageData(storageData: TaskObj[]) {
@@ -239,6 +240,24 @@ class TaskList {
         newCell.classList.add('border', 'px-2', 'text-left');
       }
     }
+  }
+
+  private async showBadge() {
+    const storageData = await LocalStorage.get();
+    const deadlineTasks = storageData.filter((task) => {
+      return (
+        task.submissionState === '未提出' &&
+        dayjs(task.deadline).diff(dayjs()) / 1000 < 172800
+      );
+    });
+    if (!deadlineTasks.length) {
+      await chrome.action.setBadgeText({ text: '' });
+      return;
+    }
+    await chrome.action.setBadgeText({
+      text: deadlineTasks.length.toString(),
+    });
+    await chrome.action.setBadgeBackgroundColor({ color: '#E13636' });
   }
 
   showDate() {
