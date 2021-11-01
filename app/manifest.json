@@ -2,7 +2,7 @@
   "name": "Open-LMS-Tasks",
   "short_name": "OLT",
   "description": "Open LMSの課題の一覧を表示します",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "manifest_version": 3,
   "icons": {
     "16": "images/icon/icon-16.png",
