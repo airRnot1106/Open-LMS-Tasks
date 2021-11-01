@@ -182,6 +182,7 @@ class TaskList {
             this.purgePage();
         }
         this.refreshTable();
+        this.showBadge();
     }
     filterStorageData(storageData) {
         let categorizedData = [];
@@ -256,6 +257,21 @@ class TaskList {
                 newCell.classList.add('border', 'px-2', 'text-left');
             }
         }
+    }
+    async showBadge() {
+        const storageData = await LocalStorage.get();
+        const deadlineTasks = storageData.filter((task) => {
+            return (task.submissionState === '未提出' &&
+                (0, dayjs_1.default)(task.deadline).diff((0, dayjs_1.default)()) / 1000 < 172800);
+        });
+        if (!deadlineTasks.length) {
+            await chrome.action.setBadgeText({ text: '' });
+            return;
+        }
+        await chrome.action.setBadgeText({
+            text: deadlineTasks.length.toString(),
+        });
+        await chrome.action.setBadgeBackgroundColor({ color: '#E13636' });
     }
     showDate() {
         const date = (0, dayjs_1.default)().format('YYYY/MM/DD HH:mm:ss');
