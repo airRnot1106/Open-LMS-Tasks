@@ -117,10 +117,6 @@ class Assign extends BaseTask {
         return '---';
       }
       const rawDate = dates[1].textContent?.replace(/Due:|\s/g, '')!;
-
-      const tbody = document
-        .querySelector('.generaltable')!
-        .querySelector('tbody');
       const date = rawDate.split(/年|月|日\(\S曜日\)/);
       const day = date.slice(0, 3).join('/');
       const time = date.slice(3).join();
