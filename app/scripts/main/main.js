@@ -81,13 +81,7 @@ class Assign extends BaseTask {
     async execute() {
         if (!this.isValidUrl(location.href))
             return;
-        await this.loadCache();
-        if (this.existsCache()) {
-            this._task = JSON.parse(this._cache[this._id]);
-        }
-        else {
-            this.fetch();
-        }
+        this.fetch();
         this.checkStatUpdate();
         await LocalStorage.set(this._id, this._task);
     }
@@ -106,9 +100,6 @@ class Assign extends BaseTask {
                 return '---';
             }
             const rawDate = dates[1].textContent?.replace(/Due:|\s/g, '');
-            const tbody = document
-                .querySelector('.generaltable')
-                .querySelector('tbody');
             const date = rawDate.split(/年|月|日\(\S曜日\)/);
             const day = date.slice(0, 3).join('/');
             const time = date.slice(3).join();
@@ -130,9 +121,8 @@ class Assign extends BaseTask {
             .querySelector('.generaltable')
             .querySelector('tbody');
         const rawState = tbody?.children[0].querySelector('.c1')?.textContent;
-        const submissionState = rawState.includes('提出済み')
-            ? '提出済み'
-            : '未提出';
+        const buttonState = document.querySelector('div[data-region="completion-info"] > button.btn-outline-success');
+        const submissionState = rawState.includes('提出済み') || !!buttonState ? '提出済み' : '未提出';
         this._task.submissionState = submissionState;
     }
 }
@@ -144,13 +134,7 @@ class Quiz extends BaseTask {
     async execute() {
         if (!this.isValidUrl(location.href))
             return;
-        await this.loadCache();
-        if (this.existsCache()) {
-            this._task = JSON.parse(this._cache[this._id]);
-        }
-        else {
-            this.fetch();
-        }
+        this.fetch();
         this.checkStatUpdate();
         await LocalStorage.set(this._id, this._task);
     }
