@@ -234,13 +234,18 @@ class TaskList {
     purgePage() {
         if (!this._pages.length)
             return;
-        this._pages.forEach((page, index, pages) => {
+        const purgeIndices = [];
+        this._pages.forEach((page, index) => {
             const submitted = page.filter((rowData) => {
                 return rowData[4] === '提出済み';
             });
             if (submitted.length === 8) {
-                pages.splice(index, 1);
+                purgeIndices.push(index);
             }
+        });
+        this._pages = this._pages.filter((_page, index) => {
+            console.log(purgeIndices);
+            return !purgeIndices.includes(index);
         });
     }
     refreshTable() {
