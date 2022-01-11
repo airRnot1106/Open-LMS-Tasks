@@ -133,9 +133,11 @@ class Assign extends BaseTask {
       .querySelector('.generaltable')!
       .querySelector('tbody');
     const rawState = tbody?.children[0].querySelector('.c1')?.textContent!;
-    const submissionState = rawState.includes('提出済み')
-      ? '提出済み'
-      : '未提出';
+    const buttonState = document.querySelector(
+      'div[data-region="completion-info"] > button.btn-outline-success'
+    );
+    const submissionState =
+      rawState.includes('提出済み') || !!buttonState ? '提出済み' : '未提出';
     this._task.submissionState = submissionState;
   }
 }
