@@ -110,11 +110,18 @@ class Assign extends BaseTask {
       return text.slice(0, text.lastIndexOf(' '));
     })();
     const deadline = (() => {
+      const dates = document.querySelectorAll(
+        'div[data-region="activity-dates"] > div'
+      );
+      if (dates.length < 2) {
+        return '---';
+      }
+      const rawDate = dates[1].textContent?.replace(/Due:|\s/g, '')!;
+
       const tbody = document
         .querySelector('.generaltable')!
         .querySelector('tbody');
-      const rawDate = tbody?.children[2].querySelector('td')?.textContent!;
-      const date = rawDate.split(/年 |月 |日\(\S曜日\) /);
+      const date = rawDate.split(/年|月|日\(\S曜日\)/);
       const day = date.slice(0, 3).join('/');
       const time = date.slice(3).join();
       return day + ' ' + time;
