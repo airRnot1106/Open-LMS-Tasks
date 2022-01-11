@@ -81,13 +81,7 @@ class Assign extends BaseTask {
     async execute() {
         if (!this.isValidUrl(location.href))
             return;
-        await this.loadCache();
-        if (this.existsCache()) {
-            this._task = JSON.parse(this._cache[this._id]);
-        }
-        else {
-            this.fetch();
-        }
+        this.fetch();
         this.checkStatUpdate();
         await LocalStorage.set(this._id, this._task);
     }
@@ -141,13 +135,7 @@ class Quiz extends BaseTask {
     async execute() {
         if (!this.isValidUrl(location.href))
             return;
-        await this.loadCache();
-        if (this.existsCache()) {
-            this._task = JSON.parse(this._cache[this._id]);
-        }
-        else {
-            this.fetch();
-        }
+        this.fetch();
         this.checkStatUpdate();
         await LocalStorage.set(this._id, this._task);
     }
