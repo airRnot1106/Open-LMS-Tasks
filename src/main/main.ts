@@ -165,14 +165,19 @@ class Quiz extends BaseTask {
       return text.slice(0, text.lastIndexOf(' '));
     })();
     const deadline = (() => {
-      const info = document.querySelector('.quizinfo')!;
-      const index = info.children.length - 2;
-      const rawDate =
-        info.children[index].textContent! +
-        info.children[index + 1].textContent!;
-      const date = rawDate.split(/\S*は |年 |月 |日\(\S曜日\) | に\S*/);
-      const day = date.slice(1, 4).join('/');
-      const time = date.slice(4, 5).join();
+      const dates = document.querySelectorAll(
+        'div[data-region="activity-dates"] > div'
+      );
+      if (dates.length < 2) {
+        return '---';
+      }
+      const rawDate = dates[1].textContent?.replace(
+        /終了(予定|済み)?:|\s/g,
+        ''
+      )!;
+      const date = rawDate.split(/年|月|日\(\S曜日\)/);
+      const day = date.slice(0, 3).join('/');
+      const time = date.slice(3).join();
       return day + ' ' + time;
     })();
     const quiz: TaskObj = {
